@@ -32,7 +32,7 @@ const fps = new (class {
       let mean = sum / this.frames.length;
   
       this.fps.textContent = `
-  Frames per second:
+  Frames per second (fps):
            latest = ${Math.round(fps)}
   avg of last 100 = ${Math.round(mean)}
   min of last 100 = ${Math.round(min)}
@@ -64,7 +64,7 @@ const renderLoop = () => {
   fps.render();
   universe.tick();
 
-  drawGrid();
+  //drawGrid();
   drawCells();
 
   requestAnimationFrame(renderLoop);
