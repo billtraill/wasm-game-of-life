@@ -3,3 +3,5 @@
 // that no one else needs to worry about it again.
 import("./index.js")
   .catch(e => console.error("Error importing `index.js`:", e));
+//import("./two.min.js")
+//  .catch(e => console.error("Error importing `two.min.js`:", e));
