@@ -2,9 +2,6 @@ import { Universe , Cell} from "wasm-game-of-life";
 // Import the WebAssembly memory at the top of the file.
 import { memory } from "wasm-game-of-life/wasm_game_of_life_bg";
 
-//import { Two } from "./two.min.js";
-import Two from "./two.min.js";
-
 const fps = new (class {
     
     constructor() {
@@ -63,8 +60,8 @@ const canvas = document.getElementById("game-of-life-canvas");
 canvas.height = (CELL_SIZE + 1) * no_cells_deap + 1;
 canvas.width = (CELL_SIZE + 1) * no_cells_wide + 1;
 
-var params = { width: canvas.width, height: canvas.height, type: Two.Types.webgl };
-var two = new Two(params).appendTo(canvas);
+// var params = { width: canvas.width, height: canvas.height, type: Two.Types.webgl };
+// var two = new Two(params).appendTo(canvas);
 
 let animationId = null;
 let cells_rects = []
@@ -76,9 +73,8 @@ const renderLoop = () => {
     //debugger;
     universe.tick();
 
-    //drawGrid();
-    drawCells();
-    two.update();
+    // Draw it
+    universe.render_webgl();
    
     animationId = requestAnimationFrame(renderLoop);
 };
@@ -109,71 +105,71 @@ playPauseButton.addEventListener("click", event => {
 });
 
 
-const drawGrid = () => {
-    // Vertical lines.
-    console.log("cells wide",no_cells_wide);
-    for (let i = 0; i <= no_cells_wide; i++) {
-        let line = two.makeLine(i * (CELL_SIZE + 1) + 1, 0, i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * no_cells_deap + 1);
-        line.stroke = GRID_COLOR;
-        line.linewidth = LINE_WIDTH;
-    }
+// const drawGrid = () => {
+//     // Vertical lines.
+//     console.log("cells wide",no_cells_wide);
+//     for (let i = 0; i <= no_cells_wide; i++) {
+//         let line = two.makeLine(i * (CELL_SIZE + 1) + 1, 0, i * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * no_cells_deap + 1);
+//         line.stroke = GRID_COLOR;
+//         line.linewidth = LINE_WIDTH;
+//     }
 
-    // Horizontal lines.
-    for (let j = 0; j <= no_cells_deap; j++) {
-        let line = two.makeLine(0, j * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * no_cells_wide + 1, j * (CELL_SIZE + 1) + 1);
-        line.stroke = GRID_COLOR;
-        line.linewidth = LINE_WIDTH;
-    }
+//     // Horizontal lines.
+//     for (let j = 0; j <= no_cells_deap; j++) {
+//         let line = two.makeLine(0, j * (CELL_SIZE + 1) + 1, (CELL_SIZE + 1) * no_cells_wide + 1, j * (CELL_SIZE + 1) + 1);
+//         line.stroke = GRID_COLOR;
+//         line.linewidth = LINE_WIDTH;
+//     }
 
-    for (let row = 0; row < no_cells_deap; row++) {
-        for (let col = 0; col < no_cells_wide; col++) {
-            const idx = getIndex(row, col);
+//     for (let row = 0; row < no_cells_deap; row++) {
+//         for (let col = 0; col < no_cells_wide; col++) {
+//             const idx = getIndex(row, col);
 
-            var rect = two.makeRectangle(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE-1, CELL_SIZE-1);
-            rect.noStroke().fill = 'rgb(0, 200, 255)';
-            cells_rects.push(rect)
-        }
-    }
+//             var rect = two.makeRectangle(col * (CELL_SIZE + 1) + 1, row * (CELL_SIZE + 1) + 1, CELL_SIZE-1, CELL_SIZE-1);
+//             rect.noStroke().fill = 'rgb(0, 200, 255)';
+//             cells_rects.push(rect)
+//         }
+//     }
    
-}
+// }
 
 const getIndex = (row, column) => {
     return row * no_cells_wide + column;
 };
 
-const drawCells = () => {
-    const cellsPtr = universe.cells();
-    const cells = new Uint8Array(memory.buffer, cellsPtr, no_cells_wide * no_cells_deap);
+// const drawCells = () => {
+//     const cellsPtr = universe.cells();
+//     const cells = new Uint8Array(memory.buffer, cellsPtr, no_cells_wide * no_cells_deap);
 
-    //ctx.beginPath();
+//     //ctx.beginPath();
 
-    // Alive cells.
-    //ctx.fillStyle = ALIVE_COLOR;
-    for (let row = 0; row < no_cells_deap; row++) {
-        for (let col = 0; col < no_cells_wide; col++) {
-            const idx = getIndex(row, col);
-            if (cells[idx] !== Cell.Alive) {
+//     // Alive cells.
+//     //ctx.fillStyle = ALIVE_COLOR;
+//     for (let row = 0; row < no_cells_deap; row++) {
+//         for (let col = 0; col < no_cells_wide; col++) {
+//             const idx = getIndex(row, col);
+//             if (cells[idx] !== Cell.Alive) {
   
-                continue;
-            }
-            cells_rects[idx].fill = 'rgb(0, 0, 0)';
-            cells_rects[idx].rotation = 0.0;
+//                 continue;
+//             }
+//             cells_rects[idx].fill = 'rgb(0, 0, 0)';
+//             cells_rects[idx].rotation = 0.0;
            
-        }
-    }
-    // Dead cells.
-    //ctx.fillStyle = DEAD_COLOR;
-    for (let row = 0; row < no_cells_deap; row++) {
-        for (let col = 0; col < no_cells_wide; col++) {
-            const idx = getIndex(row, col);
-            if (cells[idx] !== Cell.Dead) {
-                continue;
-            }
-            cells_rects[idx].fill = 'rgb(0, 200, 255)';
-            cells_rects[idx].rotation = Math.PI / 4;
-        }
-    }
-};
+//         }
+//     }
+//     // Dead cells.
+//     //ctx.fillStyle = DEAD_COLOR;
+//     for (let row = 0; row < no_cells_deap; row++) {
+//         for (let col = 0; col < no_cells_wide; col++) {
+//             const idx = getIndex(row, col);
+//             if (cells[idx] !== Cell.Dead) {
+//                 continue;
+//             }
+//             cells_rects[idx].fill = 'rgb(0, 200, 255)';
+//             cells_rects[idx].rotation = Math.PI / 4;
+//         }
+//     }
+// };
 
 canvas.addEventListener("click", event => {
     const boundingRect = canvas.getBoundingClientRect();
@@ -189,14 +185,10 @@ canvas.addEventListener("click", event => {
 
     universe.toggle_cell(row, col);
 
-    //drawGrid();
-    //  drawCells();
+    universe.render_webgl();
 });
 
 
-drawGrid();
-drawCells();
 
-two.update();
   // This used to be `requestAnimationFrame(renderLoop)`.
 play();

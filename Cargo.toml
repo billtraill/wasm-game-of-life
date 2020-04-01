@@ -34,8 +34,17 @@ wasm-bindgen-test = "0.2"
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
 
+
 [dependencies.web-sys]
-version = "0.3"
+version = "0.3.4"
 features = [
-  "console",
+  'Document',
+  'Element',
+  'HtmlCanvasElement',
+  'WebGlBuffer',
+  'WebGlRenderingContext',
+  'WebGlProgram',
+  'WebGlShader',
+  'Window',
+    "console",
 ]

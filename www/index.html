@@ -24,7 +24,8 @@
   <body>
     <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
     <button id="play-pause"></button>
-    <canvis id="game-of-life-canvas"></canvis>
+    <!-- id is used by web.rs get_context to link to the page -->
+    <canvas id="game-of-life-canvas" width="400" height="400" />
     <div id="fps"></div>
     <script src="./bootstrap.js"></script>
   </body>

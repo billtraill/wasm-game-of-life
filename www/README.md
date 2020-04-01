@@ -1,6 +1,14 @@
+## To Build
+
+```
+wasm-pack build
+```
+
+
 ## Running this (assuming its been built etc)
 
 ```
+cd www
 npm run start
 ```
 

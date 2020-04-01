@@ -1,13 +1,14 @@
 extern crate web_sys;
 
 // A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
-}
+// macro_rules! log {
+//     ( $( $t:tt )* ) => {
+//         web_sys::console::log_1(&format!( $( $t )* ).into());
+//     }
+// }
 
 mod utils;
+mod web;
 
 use wasm_bindgen::prelude::*;
 use std::fmt;
@@ -32,6 +33,12 @@ pub struct Universe {
     width: u32,
     height: u32,
     cells: Vec<Cell>,
+}
+
+// Default entry point for WASM called by default. 
+#[wasm_bindgen(start)]
+pub fn start() -> Result<(), JsValue> {
+    return web::start();
 }
 
 
@@ -166,9 +173,9 @@ impl Universe {
         }
     }
 
-    pub fn render(&self) -> String {
-        self.to_string()
-    }
+    // pub fn render(&self) -> String {
+    //     self.to_string()
+    // }
 
     pub fn width(&self) -> u32 {
         self.width
@@ -201,6 +208,48 @@ impl Universe {
     pub fn toggle_cell(&mut self, row: u32, column: u32) {
         let idx = self.get_index(row, column);
         self.cells[idx].toggle();
+    }
+
+    pub fn render_webgl(&self) -> Result<(), JsValue> {
+
+        // For each cell that is alive 
+        // create webgl triangles to draw the cell
+
+        // default webgl geometry runs run -1,1 so 2 is the length
+        // TODO: query the current geometry to find the size rather than assume it.
+        let cell_x_size = 2.0_f32/(self.width as f32); 
+        let cell_y_size = 2.0_f32/(self.height as f32);
+
+        // Create a vector of all points for each triangle
+        // 2 triangles for each cell
+        let vertices: Vec<f32> = self.cells.iter().enumerate() // enumetate gives us a a tuple with index and ref to vector
+                .filter(|e| *e.1 == Cell::Alive)
+                .map(|e| {
+                    let idx = e.0;
+                    let row = (idx as u32) / self.width;
+                    let col = (idx as u32) % self.width;
+                    let zero = 0.00_f32;
+                    //let grid = 0.01_f32;
+                    //let size = 0.0080_f32;
+                    let fx0 = (cell_x_size *  (row as f32)) -1.0_f32;
+                    let fy0 = (cell_y_size *  (col as f32)) -1.0_f32; // check oriantation of this!!
+                    let fx1 = fx0 + cell_x_size;
+                    let fy1 = fy0 + cell_y_size;
+                    let vert = vec![
+                        fx0, fy0, zero, // TODO: convert this to 2D - less data should be faster!
+                        fx1, fy0, zero,
+                        fx0, fy1, zero,
+                
+                        fx1, fy1, zero,
+                        fx0, fy1, zero,
+                        fx1, fy0, zero,
+                    ];
+                    vert
+                })
+            .flatten()
+            .collect::<Vec<f32>>();
+
+    return web::render(vertices);
     }
 }
 
